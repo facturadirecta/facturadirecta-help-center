@@ -1,0 +1,19 @@
+intercom:
+  token_env: INTERCOM_ACCESS_TOKEN
+  default_author_id_env: INTERCOM_DEFAULT_AUTHOR_ID
+
+help_center:
+  id: 2519
+  articles_path: articles
+  drafts_path: drafts
+
+metadata:
+  path: metadata/intercom
+  sync_state: metadata/intercom/sync-state.json
+
+reviews:
+  path: reviews/intercom
+
+sync:
+  conflict_strategy: stop
+  normalize_html: true
