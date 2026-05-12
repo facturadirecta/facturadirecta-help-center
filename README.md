@@ -9,6 +9,7 @@ El contenido se sincroniza desde Intercom, pero el repo usa un nombre genérico 
 ```text
 articles/          # snapshot de artículos existentes en Intercom, publicados o draft
 drafts/            # borradores o propuestas locales antes de crear artículo en Intercom
+assets/intercom/   # backup local de imágenes referenciadas desde artículos de Intercom
 metadata/intercom/ # estado de sincronización
 reviews/intercom/  # informes de revisión/reconciliación
 mappings/          # relaciones futuras con features, código y owners
@@ -58,6 +59,9 @@ intercom-sync validate
 intercom-sync status
 intercom-sync pull --dry-run
 intercom-sync pull
+intercom-sync pull-images
 intercom-sync diff
 intercom-sync reconcile
 ```
+
+`intercom-sync pull-images` descarga una copia local de las imágenes remotas referenciadas por los artículos en `assets/intercom/images/` y actualiza `metadata/intercom/assets.json`. No cambia el HTML de los artículos: las URLs de Intercom siguen siendo la referencia canónica.
