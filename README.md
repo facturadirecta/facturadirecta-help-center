@@ -23,16 +23,41 @@ Los archivos en `articles/` y `drafts/` usan Markdown con front matter YAML y cu
 - Para propuestas nuevas, el archivo empieza en `drafts/` sin `intercom_id`; al crearlo en Intercom, el flujo lo mueve o materializa como `articles/<nuevo_intercom_id>.md`.
 - El cuerpo se guarda como HTML, no como Markdown semántico, porque Intercom devuelve y acepta HTML. Preferimos commitear la forma normalizada por Intercom.
 - `created_at`, `updated_at` y `url` son metadatos de snapshot. Pueden cambiar tras un guardado en Intercom y no deben interpretarse como cambios editoriales del contenido.
-- La definición completa del formato está en `../intercom-sync/README.md`, sección `Article Format`.
+- La definición completa del formato está en el README de `intercom-sync`, sección `Article Format`.
+
+## Credenciales
+
+El CLI lee las variables de entorno definidas en `.intercom-sync.yml`. Para uso local, crea un `.env` en la raíz de este repo usando `sample.env` como referencia:
+
+```bash
+cp sample.env .env
+```
+
+Variables esperadas:
+
+- `INTERCOM_ACCESS_TOKEN`: token de acceso a la API de Intercom.
+- `INTERCOM_DEFAULT_AUTHOR_ID`: id del autor de Intercom usado por defecto al crear o actualizar artículos.
+
+No commitear `.env`; solo `sample.env` debe vivir en Git.
 
 ## Sincronización
 
-La herramienta vive en `../intercom-sync`.
+La herramienta se ejecuta como comando `intercom-sync`. Para desarrollo local puede instalarse globalmente desde el repo de la herramienta:
 
 ```bash
-node ../intercom-sync/dist/cli/index.js validate
-node ../intercom-sync/dist/cli/index.js pull --dry-run
-node ../intercom-sync/dist/cli/index.js pull
-node ../intercom-sync/dist/cli/index.js diff
-node ../intercom-sync/dist/cli/index.js reconcile
+cd ../intercom-sync
+npm install
+npm run build
+npm install -g .
+```
+
+Una vez instalado, ejecuta los comandos desde la raíz de este repo para que cargue `.intercom-sync.yml` y `.env`:
+
+```bash
+intercom-sync validate
+intercom-sync status
+intercom-sync pull --dry-run
+intercom-sync pull
+intercom-sync diff
+intercom-sync reconcile
 ```
