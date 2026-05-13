@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated_at": "2026-05-13T16:15:10.660Z",
+  "updated_at": "2026-05-13T17:40:40.782Z",
   "help_centers": {
     "default": {
       "help_center_id": 2519,
@@ -778,13 +778,13 @@
         {
           "id": "18162206",
           "workspace_id": "ind32iz6",
-          "name": "API Rest",
-          "url": "https://help.facturadirecta.com/es/collections/18162206-api-rest",
+          "name": "API REST: Referencia técnica",
+          "url": "https://help.facturadirecta.com/es/collections/18162206-api-rest-referencia-tecnica",
           "order": 2,
           "created_at": 1769547402,
-          "updated_at": 1772555865,
+          "updated_at": 1778692877,
           "type": "collection",
-          "description": "Documentación para integrar FacturaDirecta con tus aplicaciones mediante nuestra API REST. Consulta cómo autenticarte, gestionar clientes, productos, facturas y más.",
+          "description": "Referencia técnica de la API REST de FacturaDirecta: autenticación, paginación, recursos (facturas, contactos, etc.), webhooks y regímenes fiscales electrónicos (TicketBAI, VeriFactu).",
           "icon": "folder",
           "parent_id": "124003",
           "help_center_id": 2519
