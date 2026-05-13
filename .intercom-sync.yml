@@ -17,3 +17,7 @@ reviews:
 sync:
   conflict_strategy: stop
   normalize_html: true
+  # Tenemos un único workspace de Intercom; los huérfanos verdaderos
+  # (sin parent_id ni parent_ids) pertenecen siempre a este help center
+  # y deben aparecer en la copia local para no quedar invisibles.
+  include_orphans: true
