@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated_at": "2026-05-14T17:24:13.290Z",
+  "updated_at": "2026-05-14T17:37:41.901Z",
   "articles": {
     "1070765": {
       "intercom_id": "1070765",
@@ -7255,6 +7255,19 @@
       "remote_hash": "076f00d79aa05c1ef31e20ffc91a18a2a3dffb044f8d0ec96c2476e8dc3eed04",
       "status": "synced",
       "synced_at": "2026-05-14T17:24:13.290Z"
+    },
+    "15121622": {
+      "intercom_id": "15121622",
+      "help_center": "default",
+      "path": "articles/15121622.md",
+      "baseline_path": "metadata/intercom/baseline/articles/15121622.md",
+      "remote_cache_path": "metadata/intercom/remote-cache/articles/15121622.md",
+      "intercom_updated_at": 1778780263,
+      "baseline_hash": "87dcc00b725cafef070daa8ee6a7a63bd37a58ccaabbebc3732398ef7531598d",
+      "local_hash": "87dcc00b725cafef070daa8ee6a7a63bd37a58ccaabbebc3732398ef7531598d",
+      "remote_hash": "87dcc00b725cafef070daa8ee6a7a63bd37a58ccaabbebc3732398ef7531598d",
+      "status": "synced",
+      "synced_at": "2026-05-14T17:37:41.901Z"
     }
   }
 }
