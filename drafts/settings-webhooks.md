@@ -1,0 +1,438 @@
+---
+title: Configurar webhooks
+description: Recibe notificaciones HTTPS en tiempo real cuando ocurren cambios en tu empresa.
+state: draft
+parent_ids:
+  - 19634638
+meta:
+  sources_of_truth:
+    docs:
+      - facturadirecta3:docs/content/front/settings/webhooks.md
+  owner: dev
+  last_review: '2026-05-14'
+  publisher: scripts/docs/publish-help-center.ts
+---
+<h1 id="configurar-webhooks"><b>Configurar webhooks</b></h1>
+<p class="no-margin"></p>
+<p class="no-margin">Los webhooks notifican en tiempo real cuando ocurren cambios en tu
+empresa: alguien crea una factura, se cobra una factura existente, se
+da de alta un contacto nuevo, etc. En vez de consultar la API
+periódicamente, configuras una URL HTTPS y FacturaDirecta envía una
+petición <code>POST</code> con el detalle del cambio cada vez que se produce un
+evento al que estás suscrito.</p>
+<p class="no-margin"></p>
+<p class="no-margin">Esta página explica cómo configurarlos y operarlos desde el panel.
+Para la referencia técnica del payload, el catálogo completo de
+eventos y cómo verificar la firma en tu servidor, consulta el artículo
+de <b>API: Webhooks</b>.</p>
+<p class="no-margin"></p>
+<h2 id="antes-de-empezar"><b>Antes de empezar</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">Los webhooks forman parte de los planes que incluyen acceso a API. Si
+tu suscripción no lo permite, al intentar entrar a la sección verás un
+diálogo proponiéndote subir de plan.</p>
+<p class="no-margin"></p>
+<p class="no-margin">Para configurarlos necesitas:</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin">Una <b>URL HTTPS</b> accesible desde Internet. FacturaDirecta envía las
+peticiones desde nuestros servidores: ni los <code>localhost</code> ni las IPs
+privadas de tu red local funcionan.</p></li>
+<li><p class="no-margin">Un <b>servidor que reciba <code>POST</code> con cuerpo JSON</b> en esa URL y
+responda con un código <code>2xx</code> para confirmar la entrega.</p></li>
+<li><p class="no-margin">Recomendado: lógica de <b>verificación de firma</b> en tu servidor
+(ver más abajo y el artículo de API).</p></li>
+</ul>
+<p class="no-margin"></p>
+<h2 id="dnde-estn"><b>Dónde están</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">Los webhooks tienen dos vistas complementarias dentro de la
+aplicación:</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>Endpoints</b> — la configuración. Vive en <b>Ajustes</b> y desde aquí
+creas, editas y administras los endpoints de tu empresa. Toda la
+UI de gestión de endpoints (listado, crear, editar, rotar secret,
+enviar prueba, desactivar, eliminar, ver detalle) está en una
+pantalla integrada dentro de Ajustes.</p></li>
+<li><p class="no-margin"><b>Historial</b> — la lista de eventos enviados a todos tus endpoints,
+con su estado y la respuesta de tu servidor. Es una <b>página
+independiente</b> accesible desde el botón <b>Ver historial completo</b>
+dentro del detalle de un endpoint.</p></li>
+</ul>
+<p class="no-margin"></p>
+<p class="no-margin">Dentro del detalle de cada endpoint también verás un resumen del
+historial reciente de ese endpoint concreto.</p>
+<p class="no-margin"></p>
+<h2 id="crear-un-endpoint"><b>Crear un endpoint</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">En la sección de webhooks en Ajustes, pulsa <b>Crear endpoint</b>. Si no
+tienes ninguno, verás el mensaje <b>No tienes ningún endpoint
+configurado</b> y el botón en pantalla.</p>
+<p class="no-margin"></p>
+<p class="no-margin">Se abre el diálogo <b>Nuevo endpoint</b> con tres campos:</p>
+<p class="no-margin"></p>
+<h3 id="url"><b>URL</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Obligatoria. Debe empezar por <code>https://</code>. El texto de ayuda lo
+recuerda:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>URL HTTPS a la que se enviarán los eventos</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Si introduces una URL <code>http://</code>, al guardar verás el error:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>La URL debe empezar por https://</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<h3 id="nombre"><b>Nombre</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Opcional. Es un nombre libre para identificarlo en el listado cuando
+tengas varios endpoints (<code>Producción</code>, <code>ERP interno</code>, <code>Staging</code>,
+<code>Webhook de Zapier</code>, …). El texto de ayuda dice:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>Nombre para identificar este endpoint</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<h3 id="eventos"><b>Eventos</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">La lista de tipos de evento a los que se suscribe este endpoint
+concreto. Encima de la lista verás el título <b>Selecciona los
+eventos</b> y dos accesos rápidos:</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>TODOS</b> — marca todos los tipos de evento de un golpe. Útil para
+desarrollo y staging.</p></li>
+<li><p class="no-margin"><b>NINGUNO</b> — desmarca todo, para empezar con la pizarra limpia.</p></li>
+</ul>
+<p class="no-margin"></p>
+<p class="no-margin">El catálogo completo de tipos de evento (con su nombre exacto y
+descripción) vive en el artículo de <b>API: Webhooks</b>. Cada tipo sigue
+el formato <code>&lt;recurso&gt;.&lt;acción&gt;</code>: por ejemplo <code>invoice.created</code>,
+<code>invoice.paid</code>, <code>contact.updated</code>, <code>webhook_endpoint.disabled</code>.</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>Buena práctica</b>: suscríbete solo a los eventos que tu integración
+consume. Suscribirse a tipos que ignoras genera ruido y carga
+innecesaria en tu servidor; suscribirse a más tipos no es más
+&quot;completo&quot;.</p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Cuando termines, pulsa <b>Guardar endpoint</b> (o <b>Cancelar</b> para
+descartar el alta).</p>
+<p class="no-margin"></p>
+<h2 id="el-signing-secret-una-sola-vez"><b>El signing secret: una sola vez</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">Inmediatamente después de crear el endpoint, FacturaDirecta abre un
+diálogo titulado <b>Endpoint creado</b> con un mensaje en grande:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>Guarda ahora el signing secret en un lugar seguro. No se volverá a
+mostrar.</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Debajo aparece el valor del <b>Signing secret</b> (una cadena
+alfanumérica larga) y un botón <b>COPIAR</b> para llevarlo al
+portapapeles. El secret se usa para <b>verificar</b> en tu servidor que
+cada petición que recibes viene realmente de FacturaDirecta y no de
+un tercero (ver &quot;Verificar la firma&quot; más abajo).</p>
+<p class="no-margin"></p>
+<p class="no-margin">Cuando pulsas <b>Cerrar</b> el secret desaparece definitivamente. Si lo
+pierdes, la única forma de recuperarlo es <b>rotarlo</b> desde el menú
+de acciones del endpoint (lo describe la siguiente sección), pero
+<b>rotar invalida el secret antiguo al instante</b>: coordina el cambio
+en tu servidor antes de rotar.</p>
+<p class="no-margin"></p>
+<h2 id="gestionar-un-endpoint-existente"><b>Gestionar un endpoint existente</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">En el listado de endpoints, cada fila muestra <b>URL</b>, <b>Nombre</b>,
+<b>Eventos</b>, <b>Estado</b> y <b>Último envío</b>. Al pulsar sobre una fila
+se abre el diálogo <b>Información del endpoint</b> con los mismos datos
+en detalle y el menú <b>Más acciones</b> en la cabecera.</p>
+<p class="no-margin"></p>
+<p class="no-margin">El menú contiene seis acciones, condicionadas por el estado actual:</p>
+<p class="no-margin"></p>
+<h3 id="editar"><b>Editar</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Abre el diálogo <b>Editar endpoint</b> con los mismos tres campos del
+alta. Puedes cambiar URL, nombre o el conjunto de eventos suscritos.
+Pulsa <b>Guardar endpoint</b> para confirmar o <b>Cancelar</b> para
+descartar.</p>
+<p class="no-margin"></p>
+<h3 id="rotar-secret"><b>Rotar secret</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Genera un signing secret nuevo y muestra el mismo diálogo <b>Endpoint
+creado</b> con el valor nuevo (cópialo antes de cerrarlo, exactamente
+igual que en el alta). Antes de hacerlo, una confirmación pregunta:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>¿Estás seguro de que quieres rotar el secret? El secret actual
+dejará de funcionar inmediatamente.</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Botones <b>Sí, rotar</b> y <b>No</b>. Como avisa el mensaje, el secret
+antiguo deja de validar peticiones desde el instante en que confirmas
+la rotación. Si tu servidor está validando contra el secret antiguo,
+las peticiones nuevas dejarán de superar la validación hasta que
+actualices el secret en tu servidor. Coordina el corte (despliegue
+del nuevo secret en tu lado → confirmación de la rotación aquí) para
+minimizar el hueco.</p>
+<p class="no-margin"></p>
+<h3 id="enviar-prueba"><b>Enviar prueba</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Solo aparece cuando el endpoint está <b>Activo</b>. Dispara
+inmediatamente un evento sintético de prueba contra tu URL y al
+recibir respuesta de tu servidor muestra el toast:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>Evento de prueba enviado correctamente</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Útil para validar que tu endpoint responde y para sembrar el
+historial con datos reales mientras integras.</p>
+<p class="no-margin"></p>
+<h3 id="reactivar-desactivar"><b>Reactivar / Desactivar</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Solo se ve una de las dos según el estado actual.</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>Desactivar</b> (visible si el endpoint está activo). Pausa el envío
+de eventos. Confirmación:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>¿Deseas desactivar este endpoint? No se enviarán nuevos eventos
+hasta que lo reactives.</b>
+Botones: <b>Sí, desactivar</b> / <b>No</b>.</p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p></li>
+<li><p class="no-margin"><b>Reactivar</b> (visible si el endpoint está desactivado). Vuelve a
+ponerlo en marcha. Si había eventos fallidos en cola del periodo
+anterior, se reencolan automáticamente y verás el toast:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>Endpoint reactivado. Se han reencolado N eventos fallidos.</b>
+donde N es el número concreto.</p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p></li>
+</ul>
+<p class="no-margin"></p>
+<h3 id="eliminar"><b>Eliminar</b></h3>
+<p class="no-margin"></p>
+<p class="no-margin">Borra el endpoint definitivamente. Confirmación:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>¿Estás seguro de que quieres eliminar este endpoint?</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Botones <b>Sí, eliminar</b> / <b>No</b>. No se puede deshacer; si eliminas
+por error, tendrás que crear uno nuevo (con su nuevo signing secret).</p>
+<p class="no-margin"></p>
+<h2 id="estados-de-un-endpoint"><b>Estados de un endpoint</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">El chip de estado en el listado y en la cabecera del detalle puede
+tomar tres valores:</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>Activo</b> (verde) — el endpoint está en marcha y los últimos
+envíos están funcionando con normalidad.</p></li>
+<li><p class="no-margin"><b>En alerta</b> (naranja) — el endpoint está en marcha pero algunos
+envíos recientes a tu URL han fallado (timeouts, respuestas con
+status <code>5xx</code>, etc.). Revisa el <b>Historial</b> del endpoint para ver
+qué está pasando: la columna <b>HTTP</b> y el detalle de cada evento
+te indican el motivo.</p></li>
+<li><p class="no-margin"><b>Desactivado</b> (rojo) — el endpoint está pausado. No se le envía
+nada. Lo activas con la acción <b>Reactivar</b>.</p></li>
+</ul>
+<p class="no-margin"></p>
+<h2 id="detalle-del-endpoint"><b>Detalle del endpoint</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">Al abrir un endpoint, además de los datos básicos verás:</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>URL</b> — la URL HTTPS configurada.</p></li>
+<li><p class="no-margin"><b>Estado</b> — el chip mencionado arriba.</p></li>
+<li><p class="no-margin"><b>Nombre</b> — si lo definiste al crear.</p></li>
+<li><p class="no-margin"><b>Eventos</b> — los tipos a los que está suscrito, mostrados como
+chips uno por tipo.</p></li>
+<li><p class="no-margin"><b>Último envío</b> — la fecha del último intento de entrega (si lo ha
+habido).</p></li>
+</ul>
+<p class="no-margin"></p>
+<p class="no-margin">Debajo encontrarás el bloque <b>Historial</b> del endpoint: una tabla
+con los eventos más recientes enviados a esta URL. Columnas:</p>
+<p class="no-margin"></p>
+<div class="intercom-interblocks-table-container">
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><b>Tipo</b></td>
+<td>El tipo de evento (<code>invoice.created</code>, etc.).</td>
+</tr>
+<tr>
+<td><b>Estado</b></td>
+<td>Resultado del envío (entregado / pendiente / fallido).</td>
+</tr>
+<tr>
+<td><b>Fecha</b></td>
+<td>Cuándo se intentó.</td>
+</tr>
+<tr>
+<td><b>HTTP</b></td>
+<td>Código HTTP que respondió tu servidor (en blanco si la petición ni siquiera llegó).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="no-margin"></p>
+<p class="no-margin">Si todavía no hay eventos para este endpoint verás:</p>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>No hay eventos recientes</b></p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<p class="no-margin">Al pulsar sobre una fila se abre el detalle del evento concreto (ver
+sección siguiente).</p>
+<p class="no-margin"></p>
+<p class="no-margin">Al final del bloque hay un enlace <b>Ver historial completo</b> que te
+lleva a la página <code>/webhooks</code> con un filtro preaplicado por la URL
+del endpoint actual.</p>
+<p class="no-margin"></p>
+<h2 id="el-historial-completo-pgina-webhooks"><b>El historial completo (página <code>/webhooks</code>)</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">La página <b>Eventos de webhooks</b> muestra todos los eventos enviados
+a todos los endpoints de tu empresa, con la potencia de un grid
+filtrable y exportable.</p>
+<p class="no-margin"></p>
+<p class="no-margin">Columnas disponibles (puedes mostrar/ocultar y reordenar):</p>
+<p class="no-margin"></p>
+<div class="intercom-interblocks-table-container">
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><b>Fecha</b></td>
+<td>Fecha y hora de creación del evento.</td>
+</tr>
+<tr>
+<td><b>Tipo de evento</b></td>
+<td>Tipo del evento (<code>invoice.created</code>, etc.).</td>
+</tr>
+<tr>
+<td><b>Endpoint</b></td>
+<td>Nombre del endpoint destino.</td>
+</tr>
+<tr>
+<td><b>URL</b></td>
+<td>URL del endpoint destino.</td>
+</tr>
+<tr>
+<td><b>Estado</b></td>
+<td>Pendiente / Entregado / Fallido / Deshabilitado.</td>
+</tr>
+<tr>
+<td><b>HTTP</b></td>
+<td>Último código HTTP recibido.</td>
+</tr>
+<tr>
+<td><b>Intentos</b></td>
+<td>Número de envíos realizados (≥ 1 si llega a entregar a la primera; aumenta con reintentos).</td>
+</tr>
+<tr>
+<td><b>Entregado</b></td>
+<td>Fecha del envío que tuvo éxito (si llegó a entregarse).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="no-margin"></p>
+<p class="no-margin">Filtros y búsqueda funcionan como en otras pantallas con grid
+(ventanas, listas de facturas, etc.). También puedes <b>exportar</b> las
+filas filtradas a CSV / Excel desde la barra del grid.</p>
+<p class="no-margin"></p>
+<p class="no-margin">Al pulsar sobre una fila se abre el detalle del evento.</p>
+<p class="no-margin"></p>
+<h2 id="detalle-de-un-evento"><b>Detalle de un evento</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">El detalle de un evento muestra todo lo necesario para diagnosticar
+qué se envió y qué respondió tu servidor:</p>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>Fecha</b> — cuándo se generó el evento.</p></li>
+<li><p class="no-margin"><b>HTTP</b> — el código de la última respuesta de tu servidor (si
+hubo).</p></li>
+<li><p class="no-margin"><b>Payload</b> — el cuerpo JSON exacto que se envió a tu URL. Es el
+mismo formato que documenta el artículo de <b>API: Webhooks</b>.</p></li>
+<li><p class="no-margin"><b>Respuesta</b> — el cuerpo que respondió tu servidor (recortado a un
+tamaño razonable). Útil cuando tu servidor responde con un error
+legible.</p></li>
+</ul>
+<p class="no-margin"></p>
+<p class="no-margin">Si el envío falló y quieres reintentarlo manualmente (por ejemplo,
+después de arreglar el problema en tu servidor), el botón <b>Reenviar</b>
+lo vuelve a encolar para entrega inmediata.</p>
+<p class="no-margin"></p>
+<h2 id="restricciones-tcnicas"><b>Restricciones técnicas</b></h2>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>HTTPS obligatorio</b>. Las URLs <code>http://</code> se rechazan al guardar
+con el error <b>La URL debe empezar por https://</b>.</p></li>
+<li><p class="no-margin"><b>Sin IPs privadas</b>. Por seguridad, las peticiones no se entregan
+a URLs que resuelvan a rangos privados (<code>10.0.0.0/8</code>,
+<code>192.168.0.0/16</code>, <code>127.0.0.1</code>, etc.). Si necesitas probar en local,
+expón tu servidor con un túnel HTTPS (tipo ngrok / Cloudflare
+Tunnel) y usa la URL pública resultante.</p></li>
+<li><p class="no-margin"><b>Reintentos automáticos</b> en caso de fallo. Si tu servidor
+responde con un error o se cae, FacturaDirecta vuelve a intentar la
+entrega con backoff. Tras un número alto de fallos consecutivos el
+endpoint puede pasar a <b>En alerta</b> y, en última instancia, los
+eventos quedan como <b>Fallido</b> en el historial hasta que reactives
+o reintegres manualmente.</p></li>
+</ul>
+<p class="no-margin"></p>
+<h2 id="verificar-la-firma"><b>Verificar la firma</b></h2>
+<p class="no-margin"></p>
+<p class="no-margin">Cada <code>POST</code> que FacturaDirecta envía a tu URL incluye una firma HMAC
+calculada con el signing secret del endpoint. <b>Verificarla en tu
+servidor es la garantía</b> de que la petición es legítima, no ha sido
+manipulada en tránsito y proviene realmente de FacturaDirecta.</p>
+<p class="no-margin"></p>
+<p class="no-margin">Los ejemplos de verificación en Node.js, Python y PHP están en el
+artículo de <b>API: Webhooks</b> (referencia técnica). Resumen del
+patrón:</p>
+<p class="no-margin"></p>
+<ol>
+<li><p class="no-margin">Lee el body <b>crudo</b> (no parseado) de la petición.</p></li>
+<li><p class="no-margin">Lee la cabecera HTTP con la firma que envía FacturaDirecta.</p></li>
+<li><p class="no-margin">Calcula <code>HMAC-SHA256(body_crudo, tu_signing_secret)</code>.</p></li>
+<li><p class="no-margin">Compara contra la firma de la cabecera <b>usando comparación
+timing-safe</b> (no <code>==</code> ni <code>===</code>).</p></li>
+<li><p class="no-margin">Si no coinciden, responde HTTP 401 y descarta la petición.</p></li>
+</ol>
+<p class="no-margin"></p>
+<blockquote><p class="no-margin"><b>Importante</b>: si parseas el JSON antes de calcular la firma y
+calculas el hash sobre el JSON re-serializado, fallará. La firma se
+calcula sobre los bytes exactos del body recibido.</p>
+<p class="no-margin"></p>
+</blockquote>
+<p class="no-margin"></p>
+<h2 id="recursos-relacionados"><b>Recursos relacionados</b></h2>
+<p class="no-margin"></p>
+<ul>
+<li><p class="no-margin"><b>API: Webhooks</b> — referencia técnica completa: catálogo de
+eventos, forma del payload, formato exacto de la cabecera de firma
+y ejemplos completos en Node.js, Python y PHP.</p></li>
+</ul>
