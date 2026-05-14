@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated_at": "2026-05-14T18:44:11.284Z",
+  "updated_at": "2026-05-14T19:05:20.065Z",
   "articles": {
     "1070765": {
       "intercom_id": "1070765",
@@ -7437,6 +7437,32 @@
       "remote_hash": "4ec85d6324554299adbb0974e1808088bee886ce75881eed585a8a845e30727f",
       "status": "synced",
       "synced_at": "2026-05-14T18:44:11.284Z"
+    },
+    "15122397": {
+      "intercom_id": "15122397",
+      "help_center": "default",
+      "path": "articles/15122397.md",
+      "baseline_path": "metadata/intercom/baseline/articles/15122397.md",
+      "remote_cache_path": "metadata/intercom/remote-cache/articles/15122397.md",
+      "intercom_updated_at": 1778785518,
+      "baseline_hash": "ed18c82a402e0e5fbe4f5a61313b3e496e278d9798a7e625ee699f538950bb14",
+      "local_hash": "ed18c82a402e0e5fbe4f5a61313b3e496e278d9798a7e625ee699f538950bb14",
+      "remote_hash": "ed18c82a402e0e5fbe4f5a61313b3e496e278d9798a7e625ee699f538950bb14",
+      "status": "synced",
+      "synced_at": "2026-05-14T19:05:17.834Z"
+    },
+    "15122404": {
+      "intercom_id": "15122404",
+      "help_center": "default",
+      "path": "articles/15122404.md",
+      "baseline_path": "metadata/intercom/baseline/articles/15122404.md",
+      "remote_cache_path": "metadata/intercom/remote-cache/articles/15122404.md",
+      "intercom_updated_at": 1778785521,
+      "baseline_hash": "54abc2e2062a1f3ce132c1ba842b88643f2baf7fec46f399278320faee514a4a",
+      "local_hash": "54abc2e2062a1f3ce132c1ba842b88643f2baf7fec46f399278320faee514a4a",
+      "remote_hash": "54abc2e2062a1f3ce132c1ba842b88643f2baf7fec46f399278320faee514a4a",
+      "status": "synced",
+      "synced_at": "2026-05-14T19:05:20.065Z"
     }
   }
 }
