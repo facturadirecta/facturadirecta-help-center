@@ -1,0 +1,12 @@
+# Manifest de capturas de pantalla del Manual.
+# Generado y mantenido por scripts/docs/sync-screenshot-manifest.ts.
+# Ver docs/documentation-specification.md §5.3.
+
+09b27dfab9a7:
+  hint: 'Editor de compra: popover de Operación y Moneda con la opción de marcar la compra como amortizable'
+  used_in:
+    - articles/15097361.md
+  file_sha256: e63860a5b0651a13ac14b0606aa5e6f25625e37bfee9e3e9c5f50d517e418545
+  intercom_url: >-
+    https://facturadirecta.intercom-attachments-1.com/i/o/ind32iz6/2387868090/23d7129c6ac0104040afc58cb38e/09b27dfab9a7.png
+  uploaded_at: '2026-05-15T09:05:17.693Z'
